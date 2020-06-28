@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <title>Tabitha Bleil</title>
+      <meta charset="utf-8">
+      <meta name="description" content"Tabitha Bleil's personal website">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+      <meta name="author" content="Tabitha Bleil">
+		
+      <meta property="og:title" content="Tabitha Bleil">
+	  <meta property="og:site_name"content="Tabitha Bleil"/>
+      <meta property="og:url" content="https://tabithableil.github.io/">
+      <meta property="og:type" content="website">
+		
+	  <link rel="icon" type="image/png" href="images/favicon.png" sizes="32x32" />
+      <link rel="stylesheet" href="css/style.css" type="text/css">
+      <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700" rel="stylesheet">
+      <script src="https://use.fontawesome.com/3c440626f8.js"></script>
+    </head>
+    <body>
+		
+      <div id="container"></div>
+      <div id="info">
+      Hello, I'm Tabitha Bleil<br></div>
+	  <div id="content-wrapper">software engineer</div>
+	  <div id="icons">
+      <a href ="mailto:tabithableil@gmail.com" target="_blank"><i class ="fa fa-envelope" aria-hidden="true"></i></a>           
+      <a href="https://github.com/tabithableil" target="_blank"><i class ="fa fa-github-alt" aria-hidden="true"></i></a>
+      <a href="https://linkedin.com/in/tabithableil" target="_blank"><i class ="fa fa-linkedin" aria-hidden="true"></i></a>
+      <a href="https://twitter.com/tabithableil" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+	  <a href="https://keybase.io/tabitha" target="_blank"><i class="fa fa-key" aria-hidden="true"></i></a>
+      </div>
+    </body>
+	
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script src="Three.js">alert("this works");</script>
+    <script type="text/javascript">
+
+	
+      window.requestAnimFrame = (function(){
+        return  window.requestAnimationFrame       || 
+                window.webkitRequestAnimationFrame || 
+                window.mozRequestAnimationFrame    || 
+                window.oRequestAnimationFrame      || 
+                window.msRequestAnimationFrame     || 
+        function(callback, element){
+          window.setTimeout(callback, 1000 / 60);
+        };
+      })();
+	
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      var fov = 45;
+      var nearPlane = 1;
+      var farPlane = 10000;
+      var aspectRatio = w / h;
+      var camera = new THREE.Camera( fov, aspectRatio, nearPlane, farPlane );			 
+      camera.position.z = 200;
+
+      var scene = new THREE.Scene();			 
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setClearColor(new THREE.Color(0, 1));
+      renderer.setSize(w, h);
+      var $container = $('#container');
+      $container.append(renderer.domElement);
+	
+      var particleNum = 3000;
+      var particles = new THREE.Geometry();
+      var partMat = new THREE.ParticleBasicMaterial({
+          color: 0x78B1CD,
+          size: 5,
+          map: THREE.ImageUtils.loadTexture("images/particle.png"),
+          blending: THREE.AdditiveBlending,
+          transparent: true
+       });	
+      partMat.opacity = 0.24
+	
+      for(var i = 0; i < particleNum; i++) {
+        var partX = Math.random() * 500 - 250;
+        var partY = Math.random() * 500 - 250;
+        var	partZ = Math.random() * 500 - 250;
+        var particle = new THREE.Vertex(
+            new THREE.Vector3(partX, partY, partZ));
+        particle.velocity = new THREE.Vector3(.00001, 0, 0);				
+        particles.vertices.push(particle);
+      }
+	  
+      var particleSystem = new THREE.ParticleSystem(particles, partMat);
+      scene.addChild(particleSystem);
+	
+      window.addEventListener('resize', function () {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+
+	
+      function update() {
+		
+        particleSystem.rotation.x -= 0.0001;
+        particleSystem.rotation.y -= 0.0001;
+        particleSystem.rotation.z -= 0.0001;
+        var pCount = particleNum;
+        while(pCount--) {
+          var particle = particles.vertices[pCount];
+
+          if(particle.position.y < -200) {
+            particle.position.y = 200;
+            particle.velocity.y = 0;
+          }
+			
+        particle.velocity.y -= .000000001;
+			
+        particle.position.addSelf(
+        particle.velocity);
+        }
+
+        renderer.render(scene, camera);
+        requestAnimFrame(update);
+      }
+
+    requestAnimFrame(update);
+  </script>
+</html>
